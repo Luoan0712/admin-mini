@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>lekey — 播客 · 创作 · 生活</title>
   <meta name="description" content="lekey 的个人主页 — 网易云音乐播客创作者，记录声音与生活。">
-  <!-- v3 -->
   <style>
     /* ===== Reset & Base ===== */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -232,192 +231,56 @@
   </footer>
 
   <script>
-    // ===== Simple Markdown Parser =====
-    function parseFrontMatter(raw) {
-      const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-      if (!match) return { front: {}, body: raw };
-      const front = {};
-      const lines = match[1].split('\n');
-      for (const line of lines) {
-        const m = line.match(/^(\w+):\s*(.*)/);
-        if (m) {
-          let val = m[2].trim();
-          if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
-          if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
-          front[m[1]] = val;
-        }
-      }
-      return { front, body: match[2] };
-    }
+    // ===== Embedded Content (always available) =====
+    var EMBEDDED = {
+      profile: {"avatar":"L","heading":"lekey","tagline":"播客创作者 \u00b7 记录声音与生活\n在网易云电台上，用声音讲述故事","city":"汕头","netease_url":"https://music.163.com/#/user/home?id=99919935","email":"dongyeluoan@outlook.com"},
+      blog: [
+        {title:"大家好，我是洛安",date:"2026-06-30",excerpt:"",body:"大家好，我是东野洛安Sir；\n一枚在网易云音创作的音乐人。\n我的ID是99919935；希望多多支持哦。"},
+        {title:"赵雷的民谣为什么打动人",date:"2026-06-22",excerpt:"质朴的吉他、生活化的叙事，赵雷的音乐里有一种难得的真实感。",body:"赵雷在《画》里唱：「为寂寞的夜空画上一个月亮」，寥寥数语就把孤独写出画面感。这不是炫技，是功力。\n\n## 吉他就是他的语言\n\n赵雷的编曲不复杂——一把吉他，偶尔加上口琴、手鼓。但正是这种克制，让歌词和旋律有了呼吸的空间。\n\n## 叙事的力量\n\n赵雷的歌几乎每首都像一篇短篇小说。《少年锦时》里写到「我忧郁的白衬衫」，一个意象就把青春期那种别扭又美好的状态全带出来了。\n\n## 配套推荐\n\n如果你也喜欢赵雷：\n\n- 陈鸿宇《理想三旬》——同样低沉嗓音，诗意叙事\n- 宋冬野《斑马斑马》——沙哑里有温柔\n- 李志《关于郑州的记忆》——更粗粝更真实\n- 刘珂矣《半壶纱》——诗意古风"},
+        {title:"为什么我开始做播客",date:"2026-06-20",excerpt:"从文字到声音，表达方式的转变让我重新理解了「说」的力量。",body:"从文字到声音，表达方式的转变让我重新理解了「说」的力量。\n\n我在汕头生活，每天听着海浪声、街市的喧闹、傍晚自行车的铃声——这些声音让我意识到，声音本身就是一种叙事方式。\n\n## 为什么是播客？\n\n写文章需要坐下来，打开电脑，组织语言。但说话是即时的、流动的、带着情绪的。一个停顿、一次深呼吸、甚至一声叹气，都比精心雕琢的文字更真实。\n\n## 用什么设备\n\n目前用的设备很简单：一部 iPhone 录音，后期用 Adobe Audition 做降噪和 EQ 调整。简单，够用。\n\n## 接下来\n\n计划每周至少更新一期，内容不限于音乐推荐、生活随笔、汕头街头的录音。欢迎你一起来听。"}
+      ],
+      podcast: [
+        {title:"民谣特辑：赵雷与他的同类",date:"2026-06-22",duration:"22:10",color:"linear-gradient(135deg, #2d6cdf, #4a9eff)",description:"从赵雷到陈鸿宇，聊聊那些质朴又有诗意的中国民谣。",body:"这期是一期音乐特辑。从赵雷的《画》开始，一路聊到陈鸿宇、宋冬野、马頔、李志。\n\n## 本期曲目\n\n- 赵雷《画》\n- 陈鸿宇《理想三旬》\n- 宋冬野《斑马斑马》\n- 马頔《南山南》\n- 李志《关于郑州的记忆》\n\n每一首都做了简短介绍和我个人的感受。民谣的魅力在于它不炫技，但每一个字每一句旋律都精准地落在你最柔软的地方。"},
+        {title:"第一期：声音的起点",date:"2026-06-15",duration:"15:32",color:"linear-gradient(135deg, #ff5500, #ff8855)",description:"关于为什么开始做播客，以及声音对表达的意义。",body:"这是我的第一期播客。\n\n聊了很多关于「为什么」的问题：为什么选择声音而不是文字？为什么在现在开始？声音跟文字最大的不同是什么？\n\n## 本期内容\n\n- 00:00 开场白\n- 02:15 我为什么决定做播客\n- 05:40 汕头的声音——一些现场录音\n- 09:20 声音表达的独特优势\n- 12:50 结尾与预告\n\n欢迎在评论区留言聊聊你对播客的看法。"}
+      ]
+    };
 
+    // ===== Markdown Parser =====
     function mdToHtml(md) {
-      let html = md;
-      // Headings
+      var html = md;
       html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
       html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
       html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
       html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-      // Bold
       html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-      // Italic
       html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-      // Links
       html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--accent)">$1</a>');
-      // Unordered lists
       html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
       html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-      // Code
       html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-      // Paragraphs (double newlines)
       html = html.replace(/\n\n/g, '</p><p>');
       html = '<p>' + html + '</p>';
-      // Clean empty paras
       html = html.replace(/<p>\s*<\/p>/g, '');
-      // Clean nested paras in lists
       html = html.replace(/<p><ul>/g, '<ul>');
       html = html.replace(/<\/ul><\/p>/g, '</ul>');
       return html;
     }
 
-    async function loadContentList(type) {
-      // Try manifest first, fall back to hardcoded list
-      var urls = [];
-      try {
-        var mf = await fetch('content/manifest.json?t=' + Date.now());
-        if (mf.ok) {
-          var manifest = await mf.json();
-          urls = manifest[type] || [];
-        }
-      } catch(e) { /* fall through */ }
-
-      // Fallback if manifest fails
-      if (!urls.length) {
-        if (type === 'blog') {
-          urls = ['content/blog/2026-06-20-why-podcast.md', 'content/blog/2026-06-22-zhaolei-folk.md', 'content/blog/2026-06-30-new-post.md'];
-        } else {
-          urls = ['content/podcast/2026-06-15-ep01.md', 'content/podcast/2026-06-22-ep02.md'];
-        }
-      }
-
-      var items = [];
-      for (var i = 0; i < urls.length; i++) {
-        try {
-          var res = await fetch(urls[i] + '?t=' + Date.now());
-          if (!res.ok) throw new Error('Not found');
-          var raw = await res.text();
-          var parsed = parseFrontMatter(raw);
-          items.push({ title: parsed.front.title || '', date: parsed.front.date || '', excerpt: parsed.front.excerpt || '', duration: parsed.front.duration || '', color: parsed.front.color || '', description: parsed.front.description || '', body: parsed.body.trim(), url: urls[i] });
-        } catch(e) { /* skip */ }
-      }
-      items.sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
-      return items;
-    }
-
-    async function loadProfile() {
-      try {
-        const res = await fetch('content/settings/profile.json');
-        if (!res.ok) return null;
-        return await res.json();
-      } catch(e) { return null; }
-    }
-
     function formatDate(d) {
-      const m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      var m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
       if (!m) return d;
-      return `${m[1]}.${m[2]}`;
+      return m[1] + '.' + m[2];
     }
 
     function showDetail(item, type) {
-      const existing = document.querySelector('.modal-overlay');
+      var existing = document.querySelector('.modal-overlay');
       if (existing) existing.remove();
-
-      const overlay = document.createElement('div');
+      var overlay = document.createElement('div');
       overlay.className = 'modal-overlay';
-      overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-
-      overlay.innerHTML = `
-        <div class="modal-content">
-          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
-          <h2>${item.title}</h2>
-          <div class="post-meta">
-            ${formatDate(item.date)} &middot; ${type === 'podcast' ? '播客 · ' + item.duration : '博客'}
-          </div>
-          <div class="post-body">${mdToHtml(item.body)}</div>
-        </div>
-      `;
+      overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+      overlay.innerHTML = '<div class="modal-content"><button class="modal-close">\u00d7</button><h2>' + escapeHtml(item.title) + '</h2><div class="post-meta">' + formatDate(item.date) + ' \u00b7 ' + (type === 'podcast' ? '\u64ad\u5ba2 \u00b7 ' + (item.duration || '') : '\u535a\u5ba2') + '</div><div class="post-body">' + mdToHtml(item.body || '') + '</div></div>';
       document.body.appendChild(overlay);
-      overlay.querySelector('.modal-close').onclick = () => overlay.remove();
-    }
-
-    // ===== Podcaster Icons =====
-    const podcastIcons = ['🎙️', '🎵', '🌆', '🎸', '🌊', '📻', '🎤', '🎼'];
-    const contentStore = {};
-
-    // ===== Render =====
-    async function renderAll() {
-      const profile = await loadProfile();
-      if (profile) {
-        document.getElementById('heroAvatar').textContent = profile.avatar;
-        document.getElementById('heroHeading').textContent = profile.heading;
-        document.getElementById('heroTagline').innerHTML = profile.tagline.replace(/\n/g, '<br>');
-        document.getElementById('navLogo').textContent = profile.heading;
-        document.title = profile.heading + ' — 播客 · 创作 · 生活';
-        const emailLink = document.querySelector('.contact-link[href^="mailto:"]');
-        if (emailLink && profile.email) emailLink.href = 'mailto:' + profile.email;
-      }
-
-      // Podcasts
-      const podcasts = await loadContentList('podcast');
-      const pg = document.getElementById('podcastGrid');
-      if (podcasts.length) {
-        pg.innerHTML = podcasts.map((p, i) => {
-          const id = 'podcast-' + i;
-          contentStore[id] = { item: p, type: 'podcast' };
-          return `
-          <div class="podcast-card" data-cid="${id}">
-            <div class="podcast-cover" style="background: ${escapeHtml(p.color || 'linear-gradient(135deg, #ff5500, #ff8855)')};">
-              ${podcastIcons[i % podcastIcons.length]}
-              <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-            </div>
-            <div class="podcast-info">
-              <h3>${escapeHtml(p.title)}</h3>
-              <div class="meta"><span>🎧 播客</span><span>${escapeHtml(p.duration || '--:--')}</span></div>
-              <p class="desc">${escapeHtml(p.description || '')}</p>
-            </div>
-          </div>`;
-        }).join('');
-      } else {
-        pg.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">还没有播客节目，在后台添加吧</div>';
-      }
-
-      // Blogs
-      const blogs = await loadContentList('blog');
-      const bl = document.getElementById('blogList');
-      if (blogs.length) {
-        bl.innerHTML = blogs.map((b, i) => {
-          const id = 'blog-' + i;
-          contentStore[id] = { item: b, type: 'blog' };
-          return `
-          <div class="blog-item" data-cid="${id}">
-            <div>
-              <h3>${escapeHtml(b.title)}</h3>
-              <p class="excerpt">${escapeHtml(b.excerpt || '')}</p>
-            </div>
-            <span class="date">${formatDate(b.date)}</span>
-          </div>`;
-        }).join('');
-      } else {
-        bl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">还没有文章，在后台添加吧</div>';
-      }
-
-      // Bind click events
-      document.querySelectorAll('[data-cid]').forEach(el => {
-        el.addEventListener('click', function() {
-          const cid = this.getAttribute('data-cid');
-          const entry = contentStore[cid];
-          if (entry) showDetail(entry.item, entry.type);
-        });
-      });
+      overlay.querySelector('.modal-close').onclick = function() { overlay.remove(); };
     }
 
     function escapeHtml(str) {
@@ -425,17 +288,67 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    var podcastIcons = ['\ud83c\udf99\ufe0f', '\ud83c\udfb5', '\ud83c\udf06', '\ud83c\udfb8', '\ud83c\udf0a', '\ud83d\udcfb', '\ud83c\udfa4', '\ud83c\udfbc'];
+    var contentStore = {};
+
+    function renderAll() {
+      var p = EMBEDDED.profile;
+      if (p) {
+        document.getElementById('heroAvatar').textContent = p.avatar;
+        document.getElementById('heroHeading').textContent = p.heading;
+        document.getElementById('heroTagline').innerHTML = p.tagline.replace(/\n/g, '<br>');
+        document.getElementById('navLogo').textContent = p.heading;
+        document.title = p.heading + ' \u2014 \u64ad\u5ba2 \u00b7 \u521b\u4f5c \u00b7 \u751f\u6d3b';
+        var el = document.querySelector('.contact-link[href^="mailto:"]');
+        if (el && p.email) el.href = 'mailto:' + p.email;
+      }
+
+      // Podcasts
+      var pods = EMBEDDED.podcast;
+      var pg = document.getElementById('podcastGrid');
+      if (pods.length) {
+        pg.innerHTML = pods.map(function(pd, i) {
+          var id = 'podcast-' + i;
+          contentStore[id] = { item: pd, type: 'podcast' };
+          return '<div class="podcast-card" data-cid="' + id + '"><div class="podcast-cover" style="background:' + escapeHtml(pd.color || 'linear-gradient(135deg, #ff5500, #ff8855)') + ';">' + podcastIcons[i % podcastIcons.length] + '<div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div><div class="podcast-info"><h3>' + escapeHtml(pd.title) + '</h3><div class="meta"><span>\ud83c\udfa7 \u64ad\u5ba2</span><span>' + escapeHtml(pd.duration || '--:--') + '</span></div><p class="desc">' + escapeHtml(pd.description || '') + '</p></div></div>';
+        }).join('');
+      } else {
+        pg.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">\u8fd8\u6ca1\u6709\u64ad\u5ba2\u8282\u76ee\uff0c\u5728\u540e\u53f0\u6dfb\u52a0\u5427</div>';
+      }
+
+      // Blogs
+      var blogs = EMBEDDED.blog;
+      var bl = document.getElementById('blogList');
+      if (blogs.length) {
+        bl.innerHTML = blogs.map(function(b, i) {
+          var id = 'blog-' + i;
+          contentStore[id] = { item: b, type: 'blog' };
+          return '<div class="blog-item" data-cid="' + id + '"><div><h3>' + escapeHtml(b.title) + '</h3><p class="excerpt">' + escapeHtml(b.excerpt || '') + '</p></div><span class="date">' + formatDate(b.date) + '</span></div>';
+        }).join('');
+      } else {
+        bl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">\u8fd8\u6ca1\u6709\u6587\u7ae0\uff0c\u5728\u540e\u53f0\u6dfb\u52a0\u5427</div>';
+      }
+
+      // Bind clicks
+      document.querySelectorAll('[data-cid]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var entry = contentStore[this.getAttribute('data-cid')];
+          if (entry) showDetail(entry.item, entry.type);
+        });
+      });
+    }
+
     // Nav highlight
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-links a');
-    window.addEventListener('scroll', () => {
-      let current = '';
-      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
-      navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : ''; });
+    var sections = document.querySelectorAll('section');
+    var navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', function() {
+      var current = '';
+      sections.forEach(function(s) { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+      navLinks.forEach(function(a) { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : ''; });
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { const m = document.querySelector('.modal-overlay'); if (m) m.remove(); }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { var m = document.querySelector('.modal-overlay'); if (m) m.remove(); }
     });
 
     renderAll();
