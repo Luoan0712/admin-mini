@@ -279,32 +279,36 @@
     }
 
     async function loadContentList(type) {
-      // Try to fetch the content directory listing
-      // Since GitHub Pages doesn't auto-list directories, we use a manifest approach
-      // For now, we'll try to load from a pre-defined content list or GitHub API
-      const urls = [];
-      if (type === 'blog') {
-        urls.push('content/blog/2026-06-20-why-podcast.md');
-        urls.push('content/blog/2026-06-22-zhaolei-folk.md');
-      } else {
-        urls.push('content/podcast/2026-06-15-ep01.md');
-        urls.push('content/podcast/2026-06-22-ep02.md');
-      }
+      // Try manifest first, fall back to hardcoded list
+      var urls = [];
+      try {
+        var mf = await fetch('content/manifest.json?t=' + Date.now());
+        if (mf.ok) {
+          var manifest = await mf.json();
+          urls = manifest[type] || [];
+        }
+      } catch(e) { /* fall through */ }
 
-      const items = [];
-      for (const url of urls) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) throw new Error('Not found');
-          const raw = await res.text();
-          const { front, body } = parseFrontMatter(raw);
-          items.push({ ...front, body: body.trim(), url });
-        } catch(e) {
-          // skip
+      // Fallback if manifest fails
+      if (!urls.length) {
+        if (type === 'blog') {
+          urls = ['content/blog/2026-06-20-why-podcast.md', 'content/blog/2026-06-22-zhaolei-folk.md', 'content/blog/2026-06-30-new-post.md'];
+        } else {
+          urls = ['content/podcast/2026-06-15-ep01.md', 'content/podcast/2026-06-22-ep02.md'];
         }
       }
-      // Sort by date descending
-      items.sort((a, b) => b.date.localeCompare(a.date));
+
+      var items = [];
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          var res = await fetch(urls[i] + '?t=' + Date.now());
+          if (!res.ok) throw new Error('Not found');
+          var raw = await res.text();
+          var parsed = parseFrontMatter(raw);
+          items.push({ title: parsed.front.title || '', date: parsed.front.date || '', excerpt: parsed.front.excerpt || '', duration: parsed.front.duration || '', color: parsed.front.color || '', description: parsed.front.description || '', body: parsed.body.trim(), url: urls[i] });
+        } catch(e) { /* skip */ }
+      }
+      items.sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
       return items;
     }
 

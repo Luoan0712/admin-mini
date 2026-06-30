@@ -213,11 +213,17 @@ description: ""
     }
 
     function b64Decode(str) {
-      try {
-        return decodeURIComponent(escape(atob(str.replace(/\s/g, ''))));
-      } catch (e) {
-        return atob(str.replace(/\s/g, ''));
-      }
+      var binary = atob(str.replace(/\s/g, ''));
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) { bytes[i] = binary.charCodeAt(i); }
+      return new TextDecoder('utf-8').decode(bytes);
+    }
+
+    function b64Encode(str) {
+      var bytes = new TextEncoder().encode(str);
+      var binary = '';
+      for (var i = 0; i < bytes.length; i++) { binary += String.fromCharCode(bytes[i]); }
+      return btoa(binary);
     }
 
     async function editSettings() {
@@ -269,11 +275,39 @@ description: ""
       currentPath = null; currentSha = null;
     }
 
+    async function rebuildManifest() {
+      try {
+        var blogItems = await request('/repos/' + REPO + '/contents/content/blog?ref=' + BRANCH);
+        var podcastItems = await request('/repos/' + REPO + '/contents/content/podcast?ref=' + BRANCH);
+        var manifest = {
+          blog: (Array.isArray(blogItems) ? blogItems : []).map(function(f) { return f.path; }),
+          podcast: (Array.isArray(podcastItems) ? podcastItems : []).map(function(f) { return f.path; })
+        };
+        var path = 'content/manifest.json';
+        var existing = null;
+        try {
+          var data = await request('/repos/' + REPO + '/contents/' + path + '?ref=' + BRANCH);
+          existing = data;
+        } catch(e) {}
+        var body = {
+          message: 'Update manifest',
+          content: b64Encode(JSON.stringify(manifest, null, 2)),
+          branch: BRANCH
+        };
+        if (existing && existing.sha) body.sha = existing.sha;
+        await request('/repos/' + REPO + '/contents/' + path, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+      } catch(e) { console.error('Manifest sync failed:', e); }
+    }
+
     async function saveFile() {
       const content = document.getElementById('editorContent').value;
       const body = {
         message: currentSha ? 'Update ' + currentPath : 'Create ' + currentPath,
-        content: btoa(unescape(encodeURIComponent(content))),
+        content: b64Encode(content),
         branch: BRANCH
       };
       if (currentSha) body.sha = currentSha;
@@ -286,6 +320,7 @@ description: ""
         showMsg('保存成功 ✓', 'success');
         cancelEdit();
         loadList();
+        rebuildManifest();
       } catch (e) {
         showMsg('保存失败：' + e.message, 'error');
       }
@@ -301,6 +336,7 @@ description: ""
         });
         showMsg('已删除', 'success');
         loadList();
+        rebuildManifest();
       } catch (e) {
         showMsg('删除失败：' + e.message, 'error');
       }

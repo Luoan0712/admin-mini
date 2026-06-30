@@ -1,0 +1,11 @@
+{
+  "blog": [
+    "content/blog/2026-06-20-why-podcast.md",
+    "content/blog/2026-06-22-zhaolei-folk.md",
+    "content/blog/2026-06-30-new-post.md"
+  ],
+  "podcast": [
+    "content/podcast/2026-06-15-ep01.md",
+    "content/podcast/2026-06-22-ep02.md"
+  ]
+}
