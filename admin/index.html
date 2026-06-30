@@ -212,10 +212,18 @@ description: ""
       area.innerHTML = '<div class="item" style="justify-content:flex-end"><button class="btn" onclick="editSettings()">编辑个人资料</button></div><div class="item">profile.json · 站点标题、头像、邮箱等</div>';
     }
 
+    function b64Decode(str) {
+      try {
+        return decodeURIComponent(escape(atob(str.replace(/\s/g, ''))));
+      } catch (e) {
+        return atob(str.replace(/\s/g, ''));
+      }
+    }
+
     async function editSettings() {
       const path = 'content/settings/profile.json';
       const data = await request('/repos/' + REPO + '/contents/' + path + '?ref=' + BRANCH);
-      const content = atob(data.content.replace(/\s/g, ''));
+      const content = b64Decode(data.content);
       openEditor('settings', path, data.sha, content, true);
     }
 
@@ -229,7 +237,7 @@ description: ""
 
     async function editFile(path, sha) {
       const data = await request('/repos/' + REPO + '/contents/' + path + '?ref=' + BRANCH);
-      const content = atob(data.content.replace(/\s/g, ''));
+      const content = b64Decode(data.content);
       openEditor(currentTab, path, sha, content, false);
     }
 
