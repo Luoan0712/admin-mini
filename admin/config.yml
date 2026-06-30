@@ -1,10 +1,9 @@
 backend:
   name: github
   repo: Luoan0712/admin-mini
-  branch: main                   # 或 master
+  branch: main
   base_url: https://decap-oauth.netlify.app
   auth_endpoint: auth
-  squash_merges: true
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
