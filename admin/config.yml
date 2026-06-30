@@ -54,5 +54,3 @@ collections:
           - {label: "城市", name: "city", widget: "string", default: "汕头"}
           - {label: "网易云链接", name: "netease_url", widget: "string"}
           - {label: "联系邮箱", name: "email", widget: "string"}
-
-publish_mode: editorial_workflow
