@@ -1,0 +1,59 @@
+backend:
+  name: github
+  repo: Luoan0712/admin-mini
+  branch: main                   # 或 master
+  base_url: https://decap-oauth.netlify.app
+  auth_endpoint: auth
+  squash_merges: true
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "blog"
+    label: "博客文章"
+    label_singular: "博客文章"
+    folder: "content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", default: "{{now}}"}
+      - {label: "摘要", name: "excerpt", widget: "text"}
+      - {label: "正文", name: "body", widget: "markdown"}
+
+  - name: "podcast"
+    label: "播客节目"
+    label_singular: "播客节目"
+    folder: "content/podcast"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    editor:
+      preview: false
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", default: "{{now}}"}
+      - {label: "时长", name: "duration", widget: "string", default: "15:00"}
+      - {label: "封面颜色", name: "color", widget: "string", default: "linear-gradient(135deg, #ff5500, #ff8855)"}
+      - {label: "摘要", name: "description", widget: "text"}
+      - {label: "正文", name: "body", widget: "markdown"}
+
+  - name: "settings"
+    label: "站点设置"
+    editor:
+      preview: false
+    files:
+      - label: "个人资料"
+        name: "profile"
+        file: "content/settings/profile.json"
+        fields:
+          - {label: "头像文字", name: "avatar", widget: "string", default: "L"}
+          - {label: "主标题", name: "heading", widget: "string", default: "lekey"}
+          - {label: "描述", name: "tagline", widget: "text", default: "播客创作者 · 记录声音与生活"}
+          - {label: "城市", name: "city", widget: "string", default: "汕头"}
+          - {label: "网易云链接", name: "netease_url", widget: "string"}
+          - {label: "联系邮箱", name: "email", widget: "string"}
+
+publish_mode: editorial_workflow

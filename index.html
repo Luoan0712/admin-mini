@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lekey — 播客 · 创作 · 生活</title>
+  <meta name="description" content="lekey 的个人主页 — 网易云音乐播客创作者，记录声音与生活。">
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0d0d0f;
+      --bg-card: #18181c;
+      --bg-card-hover: #222228;
+      --text: #f5f5f7;
+      --text-muted: #9999a0;
+      --accent: #ff5500;
+      --accent-soft: rgba(255, 85, 0, 0.12);
+      --border: rgba(255,255,255,0.08);
+      --radius: 16px;
+      --max-width: 960px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.7; -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+    /* ===== Nav ===== */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,13,15,0.8); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+    .logo { font-weight: 700; font-size: 20px; letter-spacing: -0.5px; background: linear-gradient(135deg, #ff5500, #ff8855); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--text-muted); transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ===== Hero ===== */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(255,85,0,0.08), transparent 60%); }
+    .hero-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, #ff5500, #ff8855);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; font-weight: 800; color: #fff;
+      margin-bottom: 24px; position: relative; z-index: 1;
+      box-shadow: 0 0 60px rgba(255,85,0,0.2);
+    }
+    .hero h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; position: relative; z-index: 1; }
+    .hero .tagline { font-size: clamp(15px, 2.5vw, 19px); color: var(--text-muted); max-width: 520px; position: relative; z-index: 1; }
+    .hero-badges { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; justify-content: center; position: relative; z-index: 1; }
+    .badge { padding: 8px 16px; border-radius: 100px; font-size: 13px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); transition: all 0.2s; }
+    .badge:hover { background: var(--bg-card-hover); color: var(--text); }
+    .scroll-hint { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); color: var(--text-muted); font-size: 13px; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(8px); } }
+
+    /* ===== Section ===== */
+    section { padding: 100px 0; }
+    .section-title { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .section-sub { color: var(--text-muted); font-size: 15px; margin-bottom: 40px; }
+
+    /* ===== About ===== */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .about-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: all 0.3s; }
+    .about-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
+    .about-card h3 { font-size: 18px; margin-bottom: 8px; }
+    .about-card p { color: var(--text-muted); font-size: 14px; }
+    .about-card .icon { font-size: 28px; margin-bottom: 12px; }
+
+    /* ===== Podcast ===== */
+    .podcast-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .podcast-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.3s; cursor: pointer; }
+    .podcast-card:hover { background: var(--bg-card-hover); transform: translateY(-4px); }
+    .podcast-cover { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative; }
+    .podcast-cover .play-btn { position: absolute; width: 52px; height: 52px; border-radius: 50%; background: rgba(255,85,0,0.9); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(4px); }
+    .podcast-card:hover .play-btn { opacity: 1; }
+    .play-btn svg { width: 22px; height: 22px; fill: #fff; }
+    .podcast-info { padding: 18px 20px; }
+    .podcast-info h3 { font-size: 16px; margin-bottom: 4px; }
+    .podcast-info .meta { font-size: 13px; color: var(--text-muted); display: flex; gap: 12px; }
+    .podcast-info .desc { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ===== Blog ===== */
+    .blog-list { display: flex; flex-direction: column; gap: 16px; }
+    .blog-item { display: flex; align-items: center; justify-content: space-between; padding: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.3s; cursor: pointer; }
+    .blog-item:hover { background: var(--bg-card-hover); transform: translateX(4px); }
+    .blog-item h3 { font-size: 17px; margin-bottom: 4px; }
+    .blog-item .excerpt { font-size: 13px; color: var(--text-muted); }
+    .blog-item .date { font-size: 13px; color: var(--text-muted); white-space: nowrap; margin-left: 20px; }
+
+    /* ===== Blog/Post Detail Modal ===== */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 40px; position: relative;
+      animation: slideUp 0.3s;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-close {
+      position: absolute; top: 16px; right: 20px; font-size: 24px; background: none; border: none;
+      color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: all 0.2s;
+    }
+    .modal-close:hover { color: var(--text); background: var(--bg-card-hover); }
+    .modal-content h2 { font-size: 26px; margin-bottom: 8px; }
+    .modal-content .post-meta { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+    .modal-content .post-body h1,.modal-content .post-body h2,.modal-content .post-body h3 { margin: 24px 0 12px; color: var(--text); }
+    .modal-content .post-body p { margin-bottom: 12px; color: var(--text-muted); line-height: 1.8; }
+    .modal-content .post-body ul { margin: 8px 0; padding-left: 20px; color: var(--text-muted); }
+    .modal-content .post-body li { margin-bottom: 4px; }
+    .modal-content .post-body strong { color: var(--text); }
+    .modal-content .post-body code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+    /* ===== Contact ===== */
+    .contact-wrap { text-align: center; }
+    .contact-links { display: flex; gap: 16px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+    .contact-link { padding: 12px 24px; border-radius: 100px; font-size: 14px; background: var(--bg-card); border: 1px solid var(--border); transition: all 0.2s; }
+    .contact-link:hover { background: var(--accent-soft); border-color: var(--accent); }
+    .contact-link.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .contact-link.primary:hover { background: #ff6611; }
+
+    /* ===== Footer ===== */
+    footer { padding: 40px 0; text-align: center; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 13px; }
+
+    /* ===== Loading ===== */
+    .loading { text-align: center; padding: 40px; color: var(--text-muted); font-size: 14px; }
+    .loading::after { content: "..."; animation: ellipsis 1.5s infinite; }
+    @keyframes ellipsis { 0%,20% { content: "."; } 40% { content: ".."; } 60%,80%,100% { content: "..."; } }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 640px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 13px; }
+      .blog-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .blog-item .date { margin-left: 0; }
+      .modal-content { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <a href="#" class="logo" id="navLogo">lekey</a>
+      <div class="nav-links">
+        <a href="#about">关于</a>
+        <a href="#podcast">播客</a>
+        <a href="#blog">博客</a>
+        <a href="#contact">联系</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-avatar" id="heroAvatar">L</div>
+    <h1 id="heroHeading">lekey</h1>
+    <p class="tagline" id="heroTagline">播客创作者 · 记录声音与生活<br>在网易云电台上，用声音讲述故事</p>
+    <div class="hero-badges">
+      <span class="badge">🎧 播客创作</span>
+      <span class="badge">📷 摄影</span>
+      <span class="badge">🎵 民谣爱好者</span>
+      <span class="badge">🎧 Adobe PR/AU</span>
+    </div>
+    <div class="scroll-hint">↓ 向下滚动</div>
+  </div>
+
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title">关于我</h2>
+      <p class="section-sub">来自汕头，用声音和镜头记录生活</p>
+      <div class="about-grid">
+        <div class="about-card"><div class="icon">🎙️</div><h3>播客创作</h3><p>在网易云音乐平台以 lekey 为 ID 创作播客内容，分享生活感悟、音乐推荐与个人思考。</p></div>
+        <div class="about-card"><div class="icon">📷</div><h3>摄影记录</h3><p>用 iPhone 记录生活瞬间，擅长捕捉日常中的光影与情绪。</p></div>
+        <div class="about-card"><div class="icon">🎵</div><h3>音乐品味</h3><p>偏爱赵雷式民谣与诗意古风，喜欢有烟火气又有文学性的音乐作品。</p></div>
+        <div class="about-card"><div class="icon">✂️</div><h3>剪辑制作</h3><p>使用 Adobe Premiere Pro 与 Audition 进行视频和音频后期制作，追求专业品质。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="podcast" style="background: #0a0a0c;">
+    <div class="container">
+      <h2 class="section-title">播客作品</h2>
+      <p class="section-sub">在网易云电台收听 lekey 的播客节目</p>
+      <div class="podcast-grid" id="podcastGrid">
+        <div class="loading">加载节目中</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="blog">
+    <div class="container">
+      <h2 class="section-title">博客文章</h2>
+      <p class="section-sub">偶尔写写，记录所思所想</p>
+      <div class="blog-list" id="blogList">
+        <div class="loading">加载文章中</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="background: #0a0a0c;">
+    <div class="container">
+      <div class="contact-wrap">
+        <h2 class="section-title">联系我</h2>
+        <p class="section-sub">合作、交流、或只是聊聊天</p>
+        <div class="contact-links">
+          <a class="contact-link primary" href="https://music.163.com/#/user/home?id=lekey" target="_blank">🎧 网易云音乐</a>
+          <a class="contact-link" href="mailto:zntp5356@agent.qq.com">✉️ 发邮件</a>
+          <a class="contact-link" href="#podcast">🎙️ 听播客</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 lekey · 汕头 · 用声音记录生活</p>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Simple Markdown Parser =====
+    function parseFrontMatter(raw) {
+      const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!match) return { front: {}, body: raw };
+      const front = {};
+      const lines = match[1].split('\n');
+      for (const line of lines) {
+        const m = line.match(/^(\w+):\s*(.*)/);
+        if (m) {
+          let val = m[2].trim();
+          if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+          if (val.startsWith("'") && val.endsWith("'")) val = val.slice(1, -1);
+          front[m[1]] = val;
+        }
+      }
+      return { front, body: match[2] };
+    }
+
+    function mdToHtml(md) {
+      let html = md;
+      // Headings
+      html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      // Bold
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      // Italic
+      html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      // Links
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--accent)">$1</a>');
+      // Unordered lists
+      html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+      html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+      // Code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Paragraphs (double newlines)
+      html = html.replace(/\n\n/g, '</p><p>');
+      html = '<p>' + html + '</p>';
+      // Clean empty paras
+      html = html.replace(/<p>\s*<\/p>/g, '');
+      // Clean nested paras in lists
+      html = html.replace(/<p><ul>/g, '<ul>');
+      html = html.replace(/<\/ul><\/p>/g, '</ul>');
+      return html;
+    }
+
+    async function loadContentList(type) {
+      // Try to fetch the content directory listing
+      // Since GitHub Pages doesn't auto-list directories, we use a manifest approach
+      // For now, we'll try to load from a pre-defined content list or GitHub API
+      const urls = [];
+      if (type === 'blog') {
+        urls.push('content/blog/2026-06-20-why-podcast.md');
+        urls.push('content/blog/2026-06-22-zhaolei-folk.md');
+      } else {
+        urls.push('content/podcast/2026-06-15-ep01.md');
+        urls.push('content/podcast/2026-06-22-ep02.md');
+      }
+
+      const items = [];
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error('Not found');
+          const raw = await res.text();
+          const { front, body } = parseFrontMatter(raw);
+          items.push({ ...front, body: body.trim(), url });
+        } catch(e) {
+          // skip
+        }
+      }
+      // Sort by date descending
+      items.sort((a, b) => b.date.localeCompare(a.date));
+      return items;
+    }
+
+    async function loadProfile() {
+      try {
+        const res = await fetch('content/settings/profile.json');
+        if (!res.ok) return null;
+        return await res.json();
+      } catch(e) { return null; }
+    }
+
+    function formatDate(d) {
+      const m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!m) return d;
+      return `${m[1]}.${m[2]}`;
+    }
+
+    function showDetail(item, type) {
+      const existing = document.querySelector('.modal-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+
+      overlay.innerHTML = `
+        <div class="modal-content">
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+          <h2>${item.title}</h2>
+          <div class="post-meta">
+            ${formatDate(item.date)} &middot; ${type === 'podcast' ? '播客 · ' + item.duration : '博客'}
+          </div>
+          <div class="post-body">${mdToHtml(item.body)}</div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.querySelector('.modal-close').onclick = () => overlay.remove();
+    }
+
+    // ===== Podcaster Icons =====
+    const podcastIcons = ['🎙️', '🎵', '🌆', '🎸', '🌊', '📻', '🎤', '🎼'];
+    const contentStore = {};
+
+    // ===== Render =====
+    async function renderAll() {
+      const profile = await loadProfile();
+      if (profile) {
+        document.getElementById('heroAvatar').textContent = profile.avatar;
+        document.getElementById('heroHeading').textContent = profile.heading;
+        document.getElementById('heroTagline').innerHTML = profile.tagline.replace(/\n/g, '<br>');
+        document.getElementById('navLogo').textContent = profile.heading;
+        document.title = profile.heading + ' — 播客 · 创作 · 生活';
+        const emailLink = document.querySelector('.contact-link[href^="mailto:"]');
+        if (emailLink && profile.email) emailLink.href = 'mailto:' + profile.email;
+      }
+
+      // Podcasts
+      const podcasts = await loadContentList('podcast');
+      const pg = document.getElementById('podcastGrid');
+      if (podcasts.length) {
+        pg.innerHTML = podcasts.map((p, i) => {
+          const id = 'podcast-' + i;
+          contentStore[id] = { item: p, type: 'podcast' };
+          return `
+          <div class="podcast-card" data-cid="${id}">
+            <div class="podcast-cover" style="background: ${escapeHtml(p.color || 'linear-gradient(135deg, #ff5500, #ff8855)')};">
+              ${podcastIcons[i % podcastIcons.length]}
+              <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            </div>
+            <div class="podcast-info">
+              <h3>${escapeHtml(p.title)}</h3>
+              <div class="meta"><span>🎧 播客</span><span>${escapeHtml(p.duration || '--:--')}</span></div>
+              <p class="desc">${escapeHtml(p.description || '')}</p>
+            </div>
+          </div>`;
+        }).join('');
+      } else {
+        pg.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">还没有播客节目，在后台添加吧</div>';
+      }
+
+      // Blogs
+      const blogs = await loadContentList('blog');
+      const bl = document.getElementById('blogList');
+      if (blogs.length) {
+        bl.innerHTML = blogs.map((b, i) => {
+          const id = 'blog-' + i;
+          contentStore[id] = { item: b, type: 'blog' };
+          return `
+          <div class="blog-item" data-cid="${id}">
+            <div>
+              <h3>${escapeHtml(b.title)}</h3>
+              <p class="excerpt">${escapeHtml(b.excerpt || '')}</p>
+            </div>
+            <span class="date">${formatDate(b.date)}</span>
+          </div>`;
+        }).join('');
+      } else {
+        bl.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">还没有文章，在后台添加吧</div>';
+      }
+
+      // Bind click events
+      document.querySelectorAll('[data-cid]').forEach(el => {
+        el.addEventListener('click', function() {
+          const cid = this.getAttribute('data-cid');
+          const entry = contentStore[cid];
+          if (entry) showDetail(entry.item, entry.type);
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Nav highlight
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+      navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : ''; });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { const m = document.querySelector('.modal-overlay'); if (m) m.remove(); }
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>
