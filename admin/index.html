@@ -317,6 +317,7 @@ description: ""
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
+        localStorage.setItem('lekey_file_' + currentPath, content);
         showMsg('保存成功 ✓', 'success');
         cancelEdit();
         loadList();

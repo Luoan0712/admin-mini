@@ -245,6 +245,54 @@
       ]
     };
 
+    // ===== Load localStorage overrides (from admin panel) =====
+    function loadLocalOverrides() {
+      var data = { blog: [], podcast: [], profile: null };
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key || key.indexOf('lekey_file_') !== 0) continue;
+        var path = key.replace('lekey_file_', '');
+        var raw = localStorage.getItem(key);
+        if (path === 'content/settings/profile.json') {
+          try { data.profile = JSON.parse(raw); } catch(e) {}
+        } else if (path.indexOf('content/blog/') === 0) {
+          var parsed = parseFront(raw);
+          if (parsed) data.blog.push(parsed);
+        } else if (path.indexOf('content/podcast/') === 0) {
+          var parsed = parseFront(raw);
+          if (parsed) data.podcast.push(parsed);
+        }
+      }
+      data.blog.sort(function(a,b) { return (b.date||'').localeCompare(a.date||''); });
+      data.podcast.sort(function(a,b) { return (b.date||'').localeCompare(a.date||''); });
+      return data;
+    }
+
+    function parseFront(raw) {
+      var m = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!m) return null;
+      var front = {}, lines = m[1].split('\n');
+      for (var j = 0; j < lines.length; j++) {
+        var fm = lines[j].match(/^(\w+):\s*(.*)/);
+        if (fm) {
+          var v = fm[2].trim();
+          if ((v[0]==='"'&&v[v.length-1]==='"') || (v[0]==="'"&&v[v.length-1]==="'")) v = v.slice(1,-1);
+          front[fm[1]] = v;
+        }
+      }
+      front.body = m[2].trim();
+      return front;
+    }
+
+    function mergeContent() {
+      var local = loadLocalOverrides();
+      return {
+        profile: local.profile || EMBEDDED.profile,
+        blog: local.blog.length ? local.blog : EMBEDDED.blog,
+        podcast: local.podcast.length ? local.podcast : EMBEDDED.podcast
+      };
+    }
+
     // ===== Markdown Parser =====
     function mdToHtml(md) {
       var html = md;
@@ -292,7 +340,8 @@
     var contentStore = {};
 
     function renderAll() {
-      var p = EMBEDDED.profile;
+      var data = mergeContent();
+      var p = data.profile;
       if (p) {
         document.getElementById('heroAvatar').textContent = p.avatar;
         document.getElementById('heroHeading').textContent = p.heading;
@@ -304,7 +353,7 @@
       }
 
       // Podcasts
-      var pods = EMBEDDED.podcast;
+      var pods = data.podcast;
       var pg = document.getElementById('podcastGrid');
       if (pods.length) {
         pg.innerHTML = pods.map(function(pd, i) {
@@ -317,7 +366,7 @@
       }
 
       // Blogs
-      var blogs = EMBEDDED.blog;
+      var blogs = data.blog;
       var bl = document.getElementById('blogList');
       if (blogs.length) {
         bl.innerHTML = blogs.map(function(b, i) {
